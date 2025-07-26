@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from func.ready import bot_ready_print
-from func.tools import kusa
+from func.data import kusa
 from random import sample
 
 class FunCog(commands.Cog):
