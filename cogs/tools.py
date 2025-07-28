@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from func.ready import bot_ready_print
+from func.database import tag as tag_db
 
 class ToolsCog(commands.Cog):
     def __init__(self, bot:commands.Bot):
@@ -15,36 +16,28 @@ class ToolsCog(commands.Cog):
         pass
     tag = tag1(name="tag", description="サーバータグに関するコマンド (Powerted By Tags Collections)")
 
-    @tag.command(name="search",description="サーバータグを検索します。")
+    @tag.command(name="search", description="タグを検索します。")
     @app_commands.describe(name="タグの名前")
     async def search_tag(self, interaction:discord.Interaction, name:str):
-        normal = self.bot.get_channel(1384535117199839272)
-        nsfw = self.bot.get_channel(1384544581063802900)#1384544581063802900
-        join_seigen = self.bot.get_channel(1390436292411785317)#1390436292411785317
-        threads = normal.threads
-        threads.extend(nsfw.threads)
-        threads.extend(join_seigen.threads)
-        thread = [i for i in threads if i.name.lower() == name.lower()]
-        # print(thread)
-        # print(len(thread))
+        tags = tag_db()
+        thread = tags.get_tag(name)
         
-        if(len(thread) == 0):
+        if(thread is None):
             await interaction.response.send_message(embed=discord.Embed(
                 title="検索",
                 description="タグが見つかりませんでした。\nリンクを持っていたら、</tag submit:1392168772382756985>からタグの追加申請をしてみよう！",
-                color=0xd450b7,
-            ),ephemeral=True)
+                color=0xd450b7
+            ))
         else:
-            oya = thread[0].parent.name
-            tag = thread[0]
-            
-            message1 = tag.get_partial_message(tag.id)
-            message2 = await message1.fetch()
+            tagth = interaction.guild.get_thread(int(thread[1]))
+            oya = tagth.parent.name
+            tag = tagth
+
             await interaction.response.send_message(embed=discord.Embed(
                 title="検索",
-                description=f"タグ: {tag.name}\nここからサーバーに飛ぶことができます-> {message2.content}\n分類: {oya}",
+                description=f"タグ: {tag.name}\nここからサーバーに飛ぶことができます-> {thread[0]}",
                 color=0x0bd708
-            ),ephemeral=True)
+            ))
     
     @tag.command(name="submit", description="新しいタグを申請します。")
     async def tag_submit(self, interaction:discord.Interaction, name:str, invite:str):
