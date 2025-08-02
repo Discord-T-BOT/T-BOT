@@ -71,3 +71,26 @@ class tag:
     def delete_tag(self, name:str):
         self.cursor.execute('DELETE FROM tag WHERE name = ?',(name,))
         self.conn.commit()
+
+class set_sc_ex:
+    def __init__(self) -> None:
+        DB_FILE = 'database/settings.db'
+        self.conn = sqlite3.connect(DB_FILE)
+        self.cursor = self.conn.cursor()
+
+        self.cursor.execute('''
+            CREATE TABLE IF NOT EXISTS scex (
+                channel_id TEXT PRIMARY KEY,
+                data TEXT
+            )
+        ''')
+    
+    def add_channel(self, id:str):
+        self.cursor.execute('INSERT INTO scex (channel_id, data) VALUES (?,?)', (id,"true"))
+        self.conn.commit()
+    def del_channel(self, id:str):
+        self.cursor.execute('DELETE FROM scex WHERE channel_id = ?',(id,))
+        self.conn.commit()
+    def get_channel(self, id:str):
+        self.cursor.execute('SELECT data FROM scex WHERE channel_id = ?', (id,))
+        return self.cursor.fetchone()

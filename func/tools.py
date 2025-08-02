@@ -1,5 +1,6 @@
 from typing import Union
 from func.data import BOT_ADMIN
+from discord import Permissions
 
 # 管理者チェックの関数
 def is_bot_admin(user_id:int) -> bool:
@@ -12,3 +13,6 @@ def color_code(code:str) -> int:
         a = code
 
     return int(f"0x{a}", 16)
+
+admin_per = Permissions()
+admin_per.administrator=True
