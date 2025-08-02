@@ -71,21 +71,27 @@ class ScExCog(commands.Cog):
 
     @scex_c.command(name="add",description="このチャンネルで有効化します。")
     async def scex_add(self, interaction:discord.Interaction):
-        scex = set_sc_ex()
-        if scex.get_channel(interaction.channel.id):
-            await interaction.response.send_message("すでに有効化されています。")
+        if interaction.user.guild_permissions.manage_channels | interaction.user.guild_permissions.administrator:
+            scex = set_sc_ex()
+            if scex.get_channel(interaction.channel.id):
+                await interaction.response.send_message("すでに有効化されています。")
+            else:
+                scex.add_channel(interaction.channel.id)
+                await interaction.response.send_message("追加しました！")
         else:
-            scex.add_channel(interaction.channel.id)
-            await interaction.response.send_message("追加しました！")
+            await interaction.response.send_message("この操作をするには`チャンネルの管理`権限が必要です。",ephemeral=True)
     
     @scex_c.command(name="del",description="このチャンネルで無効化します。")
     async def scex_add(self, interaction:discord.Interaction):
-        scex = set_sc_ex()
-        if scex.get_channel(interaction.channel.id):
-            scex.del_channel(interaction.channel.id)
-            await interaction.response.send_message("無効にしました！")
+        if interaction.user.guild_permissions.manage_channels | interaction.user.guild_permissions.administrator:
+            scex = set_sc_ex()
+            if scex.get_channel(interaction.channel.id):
+                scex.del_channel(interaction.channel.id)
+                await interaction.response.send_message("無効にしました！")
+            else:
+                await interaction.response.send_message("すでに無効化されています。")
         else:
-            await interaction.response.send_message("すでに無効化されています。")
+            await interaction.response.send_message("この操作をするには`チャンネルの管理`権限が必要です。",ephemeral=True)
     
 async def setup(bot):
     await bot.add_cog(ScExCog(bot))
