@@ -94,3 +94,25 @@ class set_sc_ex:
     def get_channel(self, id:str):
         self.cursor.execute('SELECT data FROM scex WHERE channel_id = ?', (id,))
         return self.cursor.fetchone()
+
+class set_auto_pub:
+    def __init__(self) -> None:
+        DB_FILE = 'database/settings.db'
+        self.conn = sqlite3.connect(DB_FILE)
+        self.cursor = self.conn.cursor()
+
+        self.cursor.execute('''
+            CREATE TABLE IF NOT EXISTS pub (
+                channel_id TEXT PRIMARY KEY,
+                data TEXT
+            )
+        ''')
+    def add_channel(self, id:str):
+        self.cursor.execute('INSERT INTO pub (channel_id, data) VALUES (?,?)', (id,"true"))
+        self.conn.commit()
+    def del_channel(self, id:str):
+        self.cursor.execute('DELETE FROM pub WHERE channel_id = ?',(id,))
+        self.conn.commit()
+    def get_channel(self, id:str):
+        self.cursor.execute('SELECT data FROM pub WHERE channel_id = ?', (id,))
+        return self.cursor.fetchone()

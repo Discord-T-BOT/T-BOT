@@ -10,7 +10,8 @@ import sys
 import json
 from dotenv import load_dotenv
 load_dotenv()
-from func.tools import is_bot_admin, kusa, Sender_Guild
+from func.tools import is_bot_admin, admin_per
+from func.data import kusa, Sender_Guild
 
 now_status = 0
 
@@ -82,21 +83,23 @@ async def main(bot:commands.Bot):
             await self.channel.send(embed=discord.Embed(description=self.message, color=a))
             await interaction.response.send_message("sended.",ephemeral=True)
 
-    @bot.tree.context_menu(name="メッセージを再送信",guilds=Sender_Guild)
+    @bot.tree.context_menu(name="メッセージを再送信", guilds=Sender_Guild)
+    @app_commands.default_permissions(admin_per)
     async def message_re_send(interaction:discord.Interaction, message:discord.Message):
-        if interaction.user.guild_permissions.administrator:
-            await message.channel.send(content=message.content, embeds=message.embeds)
-            await interaction.response.send_message(content="sended.",ephemeral=True)
-        else:
-            await interaction.response.send_message(content="このアプリは、管理者のみ実行可能です。", ephemeral=True)
+            if interaction.user.guild_permissions.administrator:
+                await message.channel.send(content=message.content, embeds=message.embeds)
+                await interaction.response.send_message(content="sended.",ephemeral=True)
+            else:
+                await interaction.response.send_message(content="このアプリは、管理者のみ実行可能です。", ephemeral=True)
 
-    @bot.tree.context_menu(name="メッセージを埋め込みに変換",guilds=Sender_Guild)
+    @bot.tree.context_menu(name="メッセージを埋め込みに変換", guilds=Sender_Guild)
+    @app_commands.default_permissions(admin_per)
     async def message_send_embed(interaction:discord.Interaction, message:discord.Message):
-        if interaction.user.guild_permissions.administrator:
-            modal = SendEmbedModal(channel=message.channel, message=message.content)
-            await interaction.response.send_modal(modal)
-        else:
-            await interaction.response.send_message(content="このアプリは、管理者のみ実行可能です。", ephemeral=True)
+            if interaction.user.guild_permissions.administrator:
+                modal = SendEmbedModal(channel=message.channel, message=message.content)
+                await interaction.response.send_modal(modal)
+            else:
+                await interaction.response.send_message(content="このアプリは、管理者のみ実行可能です。", ephemeral=True)
     
     class SendModal(discord.ui.Modal):
         def __init__(self, channel:discord.TextChannel, ifembed:bool,user:discord.Member):
@@ -123,20 +126,21 @@ async def main(bot:commands.Bot):
                 a = await self.channel.send(content=self.messages)
             await interaction.response.send_message("sended.",ephemeral=True)
 
-    @bot.tree.command(name="send", description="送信", guilds=Sender_Guild)
+    @bot.tree.command(name="send", description="送信(通常使用不可)", guilds=Sender_Guild)
+    @app_commands.default_permissions(admin_per)
     async def send(interaction:discord.Interaction, channel:discord.TextChannel = None, ifembed:bool = True):
-        if interaction.user.guild_permissions.administrator:
-            if channel == None:
-                send_channel = interaction.channel
+            if interaction.user.guild_permissions.administrator:
+                if channel == None:
+                    send_channel = interaction.channel
+                else:
+                    send_channel = channel
+                modal = SendModal(channel=send_channel,ifembed=ifembed,user=interaction.user)
+                await interaction.response.send_modal(modal)
             else:
-                send_channel = channel
-            modal = SendModal(channel=send_channel,ifembed=ifembed,user=interaction.user)
-            await interaction.response.send_modal(modal)
-        else:
-            await interaction.response.send_message(content="このアプリは、管理者のみ実行可能です。", ephemeral=True)
+                await interaction.response.send_message(content="このアプリは、管理者のみ実行可能です。", ephemeral=True)
 
     async def send_update_message():
-        update_id = 1391902989069058050
+        update_id = 1399771674081230979
         update = await bot.fetch_channel(update_id)
         embed = discord.Embed(title='BOTが起動しました^o^',description="BOTが起動されました",color=0x0004ff,timestamp=datetime.now())
         await update.send(embed=embed)

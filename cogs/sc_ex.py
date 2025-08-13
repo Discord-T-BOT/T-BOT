@@ -90,7 +90,7 @@ class ScExCog(commands.Cog):
             await interaction.response.send_message("この操作をするには`チャンネルの管理`権限が必要です。",ephemeral=True)
     
     @scex_c.command(name="del",description="このチャンネルで無効化します。")
-    async def scex_add(self, interaction:discord.Interaction):
+    async def scex_del(self, interaction:discord.Interaction):
         if interaction.user.guild_permissions.manage_channels | interaction.user.guild_permissions.administrator:
             scex = set_sc_ex()
             if scex.get_channel(interaction.channel.id):

@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
+from discord.app_commands import Choice
 from func.ready import bot_ready_print
 from func.tools import color_code
 from typing import Union, Optional
@@ -37,6 +38,32 @@ class ModCog(commands.Cog):
             ))
         else:
             await interaction.response.send_message("この操作をするには`チャンネルの管理`権限が必要です。")
+
+    # @channel.command(name="permisson_all",description="指定した権限をすべてのチャンネルで切り替えます。")
+    # @app_commands.choices(perm=[
+    #     Choice(name="チャンネルを見る",value="read_messages"),
+    #     Choice(name="チャンネルの管理",value="manage_channels"),
+    #     Choice(name="権限の管理",value="manage_permissions"),
+    #     Choice(name="ウェブフックの管理",value="manage_webhooks"),
+    #     Choice(name="招待を作成",value="create_instant_invite"),
+    #     Choice(name="メッセージを送信",value="send_messages"),
+    #     Choice(name="スレッドでメッセージを送信",value="send_messages_in_threads"),
+    #     Choice(name="公開スレッドの作成",value="create_public_threads"),
+    #     Choice(name="プライベートスレッドの作成",value="create_private_threads"),
+    #     Choice(name="埋め込みリンク",value="embed_links"),
+    #     Choice(name="ファイルを添付",value="attach_files"),
+    #     Choice(name="リアクションの追加",value="add_reactions"),
+    #     Choice(name="外部の絵文字を使用する",value="use_external_emojis"),
+    #     Choice(name="外部のスタンプを使用する",value="use_external_stickers"),
+    #     Choice(name="@everyone、@here、全てのロールにメンション",value="mention_everyone"),
+    #     Choice(name="メッセージの管理",value="manage_messages"),
+    #     Choice(name="スレッドの管理",value="manage_threads"),
+    #     Choice(name="メッセージ履歴を読む",value="read_messages_history"),
+    #     Choice(name="テキスト読み上げメッセージを送信する",value="send_tts_messages"),
+    #     Choice(name="ボイスメッセージを送信",value="send_voice_messages"),
+    #     Choice(name="投票の作成",value="create_polls"),
+    #     Choice(name="接続",value="")
+    # ])
     
     class role1(app_commands.Group):
         pass
@@ -153,6 +180,8 @@ class ModCog(commands.Cog):
             )
         else:
             await interaction.response.send_message("この操作をするには`ロールの管理`権限が必要です。")
+    
+    
 
 async def setup(bot):
     await bot.add_cog(ModCog(bot))
