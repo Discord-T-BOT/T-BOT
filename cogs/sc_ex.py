@@ -14,40 +14,50 @@ class ScExCog(commands.Cog):
     async def on_ready(self):
         bot_ready_print("SCEXCog")
     
+    def escape_markdown(self, text):
+        special_chars = r"\`*_#+-~"
+        for char in special_chars:
+            text = text.replace(char, f"\\{char}")
+        return text
+    
     async def scratch_expand(self, channel_id:int, id:int, message:discord.Message):
         async with aiohttp.ClientSession() as session:
             async with session.get(f"https://api.scratch.mit.edu/projects/{id}/") as resp:
                 data = await resp.json()
                 print(data)
-                if data["code"] == "NotFound":
-                    await message.reply(embed=discord.Embed(
-                        title="エラー",
-                        description="無効なURLです",
-                        color=0xff0000
-                    ),allowed_mentions=discord.AllowedMentions(users=False, replied_user=False, roles=False,everyone=False))
+                if ("code" in data):
+                    if data["code"] == "NotFound":
+                        await message.reply(embed=discord.Embed(
+                            title="エラー",
+                            description="無効なURLです",
+                            color=0xff0000
+                        ),allowed_mentions=discord.AllowedMentions(users=False, replied_user=False, roles=False,everyone=False))
                 else:
                     embeds = []
                     embeds.append(discord.Embed(
-                        title=data["title"],
+                        title=self.escape_markdown(data["title"]),
                         url=f"https://scratch.mit.edu/projects/{id}/",
                         color=0xfda747,
                     ))
                     if data["instructions"] != None:
-                        
+                        ins_tes = self.escape_markdown(len(data["instructions"]) if len(data["instructions"]) < 15 else "\n".join(re.split("\n",data["instructions"])[:5]))
+                        print(ins_tes)
                         embeds.append(discord.Embed(
                             title="使い方",
-                            description=(len(data["instructions"]) if len(data["instructions"]) < 15 else "\n".join(re.split("\n",data["instructions"])[:5])),
+                            description=ins_tes,
                             color=0xfda747
                         ))
                     if data["description"] != None:
+                        des_tes = self.escape_markdown(len(data["description"]) if len(data["description"]) < 15 else "\n".join(re.split("\n",data["description"])[:5]))
+                        print(des_tes)
                         embeds.append(discord.Embed(
                             title="メモとクレジット",
-                            description=(len(data["description"]) if len(data["description"]) < 15 else "\n".join(re.split("\n",data["description"])[:5])),
+                            description=des_tes,
                             color=0xfda747
                         ))
                     embeds.append(discord.Embed(
                         title="ステータス",
-                        description=f"<:love:1401290862956253324> : {data['stats']['loves']} | <:fav:1401290849857310800> : {data['stats']['favorites']} | <:remix:1401290874784190484> : {data['stats']['remixes']} | <:views:1401290886205411560> : {data['stats']['views']}",
+                        description=f"<:love:1423983731823087757> : {data['stats']['loves']} | <:fav:1423983625124184124> : {data['stats']['favorites']} | <:remixgray:1423983786097381458> : {data['stats']['remixes']} | <:views:1423983854414204940> : {data['stats']['views']}",
                         color=0xfda747
                     ))
                     embeds[0].set_author(name=data["author"]["username"],icon_url=data["author"]["profile"]["images"]["90x90"])
