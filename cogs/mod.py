@@ -105,7 +105,8 @@ class ModCog(commands.Cog):
             if role in member.roles:
                 await interaction.response.send_message("すでに付与されています。")
             else:
-                await member.add_roles(role=role, reason=f"role give by {interaction.user.name}")
+                
+                await member.add_roles(role, f"role give by {interaction.user.name}",)
                 await interaction.response.send_message(
                     embed=discord.Embed(
                         title="ロール付与完了",
